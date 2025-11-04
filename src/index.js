@@ -1,24 +1,24 @@
+console.log("-------- MY CODE IS RUNNING -------");
 const express = require('express');
 const app = express();
 const port = 3000;
 
-const tasks = [
-  { id: 1, title: 'Learn Node.js', completed: false, priority: 'low', createdAt: new Date() },
-  { id: 2, title: 'Build REST API', completed: false, priority: 'medium', createdAt: new Date() },
-  { id: 3, title: 'Test API with Postman', completed: true, priority: 'high', createdAt: new Date() },
-  { id: 4, title: 'Write Documentation', completed: false, priority: 'medium', createdAt: new Date() },
-  { id: 5, title: 'Refactor Project Structure', completed: true, priority: 'low', createdAt: new Date() }
-];
+console.log("RUNNING FROM:", __filename);
 
 app.get('/', (req, res) => {
-  res.send('Task Management API is running!');
+  res.send('Home route works!');
 });
 
-app.get('/tasks', (req, res) => {
-  res.json(tasks);
+app.get('/abc', (req, res) => {
+  res.send('ABC route works!');
 });
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', uptime: process.uptime() });
+});
+
+console.log('ROUTE STACK:', app._router.stack);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
-
