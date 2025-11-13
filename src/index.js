@@ -1,35 +1,25 @@
-console.log("-------- MY CODE IS RUNNING -------");
-
 const express = require('express');
+const taskRouter = require('./routes/tasks');
+
 const app = express();
-const port = 3000;
 
-console.log("RUNNING FROM:", __filename);
+// Middleware to parse JSON body
+app.use(express.json());
 
-// Import tasks router
-const tasksRouter = require('./routes/tasks');
+// ✅ Pre-fill one sample task
+const tasks = [
+  { id: 1, title: 'Sample Task', completed: false }
+];
+app.locals.tasks = tasks;
 
-// Use tasks router
-app.use('/', tasksRouter);
+// Mount router
+app.use('/tasks', taskRouter);
 
-// Other routes
+// Root route
 app.get('/', (req, res) => {
-  res.send('Home route works!');
+  res.send('Task Manager API is running 🚀');
 });
 
-app.get('/abc', (req, res) => {
-  res.send('ABC route works!');
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', uptime: process.uptime() });
-});
-
-// Show all routes
-console.log('ROUTE STACK:', app._router.stack);
-
-// Start server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
-
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));

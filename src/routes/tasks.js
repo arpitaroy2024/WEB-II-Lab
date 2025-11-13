@@ -1,58 +1,46 @@
 const express = require('express');
 const router = express.Router();
 
-// Sample tasks array
-let tasks = [
-    { id: 1, title: "Learn Node.js", completed: false },
-    { id: 2, title: "Build REST API", completed: false },
-];
-
-// GET all tasks
-router.get('/tasks', (req, res) => {
-    res.json(tasks);
+// GET /tasks - Retrieve all tasks
+router.get('/', (req, res) => {
+  const tasks = req.app.locals.tasks; // shared tasks
+  res.status(200).json({
+    success: true,
+    data: tasks
+  });
 });
 
-// GET a single task by ID with error handling
-router.get('/task/:id', (req, res) => {
-    const id = parseInt(req.params.id);
+// POST /tasks - Create a new task
+router.post('/', (req, res) => {
+  try {
+    const { title } = req.body;
 
-    // Check for invalid ID format
-    if (isNaN(id)) {
-        return res.status(400).json({ error: "Invalid ID format" });
+    if (!title || typeof title !== 'string' || title.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Title is required and must be a non-empty string'
+      });
     }
 
-    const task = tasks.find(t => t.id === id);
+    const newTask = {
+      id: Date.now(),
+      title: title.trim(),
+      completed: false
+    };
 
-    if (!task) {
-        return res.status(404).json({ error: "Task not found" });
-    }
-
-    res.json(task);
-});
-
-// POST a new task
-router.post('/tasks', (req, res) => {
-    const { title, completed } = req.body;
-    const newTask = { id: tasks.length + 1, title, completed: completed || false };
+    const tasks = req.app.locals.tasks;
     tasks.push(newTask);
-    res.status(201).json(newTask);
-});
 
-// DELETE a task by ID
-router.delete('/task/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-
-    if (isNaN(id)) {
-        return res.status(400).json({ error: "Invalid ID format" });
-    }
-
-    const index = tasks.findIndex(t => t.id === id);
-    if (index === -1) {
-        return res.status(404).json({ error: "Task not found" });
-    }
-
-    tasks.splice(index, 1);
-    res.json({ message: "Task deleted successfully" });
+    res.status(201).json({
+      success: true,
+      data: newTask
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
 });
 
 module.exports = router;
